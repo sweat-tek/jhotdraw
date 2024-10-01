@@ -13,6 +13,7 @@ import javax.swing.*;
 import org.jhotdraw.api.gui.EditableComponent;
 import org.jhotdraw.util.*;
 
+
 /**
  * Duplicates the selected region.
  * <p>
@@ -61,7 +62,7 @@ public class DuplicateAction extends AbstractSelectionAction {
      * Creates a new instance which acts on the specified component.
      *
      * @param target The target of the action. Specify null for the currently
-     * focused component.
+     *               focused component.
      */
     public DuplicateAction(JComponent target) {
         super(target);
@@ -69,20 +70,37 @@ public class DuplicateAction extends AbstractSelectionAction {
         labels.configureAction(this, ID);
     }
 
+
     @Override
     public void actionPerformed(ActionEvent evt) {
-        JComponent c = target;
-        if (c == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                getPermanentFocusOwner() instanceof JComponent)) {
-            c = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                    getPermanentFocusOwner();
+        // Change Variable name
+        JComponent targetComponent = getTargetComponent();
+
+        // Return early if there is no valid or enabled component
+        if (targetComponent == null || !targetComponent.isEnabled()) {
+            return;
         }
-        if (c != null && c.isEnabled()) {
-            if (c instanceof EditableComponent) {
-                ((EditableComponent) c).duplicate();
-            } else {
-                c.getToolkit().beep();
-            }
+
+        // Perform duplication if the component is editable
+        if (targetComponent instanceof EditableComponent) {
+            ((EditableComponent) targetComponent).duplicate();
+        } else {
+            targetComponent.getToolkit().beep();
         }
+    }
+    private JComponent getTargetComponent() {
+        // Check if 'target' is available
+        if (target != null) {
+            return target;
+        }
+
+        // Get the component that is currently in focus
+        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+        if (focusOwner instanceof JComponent) {
+            return (JComponent) focusOwner;
+        }
+
+        // Returnér null, if no valid component is found
+        return null;
     }
 }

@@ -66,7 +66,7 @@ public class CopyAction extends AbstractSelectionAction {
         if (c != null) {
             c.getTransferHandler().exportToClipboard(
                     c,
-                    ClipboardUtil.getClipboard(),
+                    ClipboardUtil.getClipboard(),   //
                     TransferHandler.COPY);
         }
     }
