@@ -77,7 +77,7 @@ public class DeleteAction extends TextAction {
      * Creates a new instance which acts on the specified component.
      *
      * @param target The target of the action. Specify null for the currently
-     * focused component.
+     *               focused component.
      */
     public DeleteAction(JComponent target) {
         this(target, ID);
@@ -87,7 +87,7 @@ public class DeleteAction extends TextAction {
      * Creates a new instance which acts on the specified component.
      *
      * @param target The target of the action. Specify null for the currently
-     * focused component.
+     *               focused component.
      */
     protected DeleteAction(JComponent target, String id) {
         super(id);
@@ -125,32 +125,55 @@ public class DeleteAction extends TextAction {
         }
     }
 
+
     /**
      * This method was copied from
      * DefaultEditorKit.DeleteNextCharAction.actionPerformed(ActionEvent).
      */
     public void deleteNextChar(ActionEvent e) {
-        JTextComponent c = getTextComponent(e);
-        boolean beep = true;
-        if ((c != null) && (c.isEditable())) {
-            try {
-                javax.swing.text.Document doc = c.getDocument();
-                Caret caret = c.getCaret();
-                int dot = caret.getDot();
-                int mark = caret.getMark();
-                if (dot != mark) {
-                    doc.remove(Math.min(dot, mark), Math.abs(dot - mark));
-                    beep = false;
-                } else if (dot < doc.getLength()) {
-                    doc.remove(dot, 1);
-                    beep = false;
-                }
-            } catch (BadLocationException bl) {
-                // allowed empty
-            }
-        }
-        if (beep) {
+        JTextComponent textComponent = getTextComponent(e);
+        if (textComponent == null || !textComponent.isEditable()) {
+            // Emit beep if the component is null or not editable
             Toolkit.getDefaultToolkit().beep();
+            return;
         }
+        try {
+            javax.swing.text.Document doc = textComponent.getDocument();
+            Caret caret = textComponent.getCaret();
+
+            // If there is a selection, delete the selected text
+            if (hasSelection(caret)) {
+                deleteSelectedText(doc, caret);
+            }
+            // If no selection, check if we can delete the next character
+            else if (canDeleteNextCharacter(caret, doc)) {
+                deleteNextCharacter(doc, caret.getDot());
+            }
+            // Emit beep if no deletion occurred
+            else {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        } catch (BadLocationException bl) {
+            // Ignoring exception due to invalid document position
+        }
+    }
+
+    // Helper methods remain the same
+    private boolean hasSelection(Caret caret) {
+        return caret.getDot() != caret.getMark(); // True if there is a selection
+    }
+
+    private void deleteSelectedText(javax.swing.text.Document doc, Caret caret) throws BadLocationException {
+        int dot = caret.getDot();
+        int mark = caret.getMark();
+        doc.remove(Math.min(dot, mark), Math.abs(dot - mark)); // Remove selected text
+    }
+
+    private boolean canDeleteNextCharacter(Caret caret, javax.swing.text.Document doc) {
+        return caret.getDot() < doc.getLength(); // True if caret is not at the end
+    }
+
+    private void deleteNextCharacter(javax.swing.text.Document doc, int dot) throws BadLocationException {
+        doc.remove(dot, 1); // Remove one character at the caret position
     }
 }

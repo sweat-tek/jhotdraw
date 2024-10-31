@@ -55,28 +55,42 @@ public class PasteAction extends AbstractSelectionAction {
         labels.configureAction(this, ID);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        JComponent c = target;
-        if (c == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                getPermanentFocusOwner() instanceof JComponent)) {
-            c = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                    getPermanentFocusOwner();
-        }
-        if (c != null && c.isEnabled()) {
-            Transferable t = ClipboardUtil.getClipboard().getContents(c);
-            if (t != null && c.getTransferHandler() != null) {
-                c.getTransferHandler().importData(
-                        c,
-                        t);
-            }
-        }
-    }
+
 
     @Override
     protected void updateEnabled() {
         if (target != null) {
             setEnabled(target.isEnabled());
         }
+    }@Override
+    public void actionPerformed(ActionEvent evt) {
+        JComponent focusedComponent = getTargetComponent();
+
+        if (isComponentEligibleForTransfer(focusedComponent)) {
+            Transferable clipboardContent = ClipboardUtil.getClipboard().getContents(focusedComponent);
+            if (clipboardContent != null) {
+                importDataToComponent(focusedComponent, clipboardContent);
+            }
+        }
     }
+
+    private JComponent getTargetComponent() {
+        if (target != null) {
+            return target;
+        }
+        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        if (focusManager.getPermanentFocusOwner() instanceof JComponent) {
+            return (JComponent) focusManager.getPermanentFocusOwner();
+        }
+
+        return null;
+    }
+    private boolean isComponentEligibleForTransfer(JComponent component) {
+        return component != null && component.isEnabled() && component.getTransferHandler() != null;
+    }
+
+    private void importDataToComponent(JComponent component, Transferable transferable) {
+        component.getTransferHandler().importData(component, transferable);
+    }
+
 }
