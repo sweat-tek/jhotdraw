@@ -1,17 +1,10 @@
-/*
- * @(#)CutAction.java
- *
- * Copyright (c) 1996-2010 The authors and contributors of JHotDraw.
- * You may not use, copy or modify this file, except in compliance with the
- * accompanying license terms.
- */
 package org.jhotdraw.action.edit;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
 import org.jhotdraw.datatransfer.ClipboardUtil;
-import org.jhotdraw.util.*;
+import org.jhotdraw.util.ResourceBundleUtil;
 
 /**
  * Cuts the selected region and places its contents into the system clipboard.
@@ -26,9 +19,7 @@ import org.jhotdraw.util.*;
  * If you want this behavior in your application, you have to create an action
  * with this ID and put it in your {@code ApplicationModel} in method
  * {@link org.jhotdraw.app.ApplicationModel#initApplication}.
- *
- * @author Werner Randelshofer
- * @version $Id$
+ * </p>
  */
 public class CutAction extends AbstractSelectionAction {
 
@@ -50,23 +41,55 @@ public class CutAction extends AbstractSelectionAction {
      */
     public CutAction(JComponent target) {
         super(target);
+        initializeAction();
+    }
+
+    private void initializeAction() {
         ResourceBundleUtil labels = ResourceBundleUtil.getBundle("org.jhotdraw.action.Labels");
         labels.configureAction(this, ID);
     }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        JComponent c = target;
-        if (c == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                getPermanentFocusOwner() instanceof JComponent)) {
-            c = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
-                    getPermanentFocusOwner();
+        JComponent component = getActiveComponent();
+        if (isComponentEligibleForCut(component)) {
+            performCutToClipboard(component);
         }
-        if (c != null && c.isEnabled()) {
-            c.getTransferHandler().exportToClipboard(
-                    c,
-                    ClipboardUtil.getClipboard(),
-                    TransferHandler.MOVE);
+    }
+
+    /**
+     * Retrieves the target component, defaulting to the currently focused component if target is null.
+     *
+     * @return the active JComponent or null if none is focused.
+     */
+    private JComponent getActiveComponent() {
+        if (target != null) {
+            return target;
         }
+        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+        return (focusOwner instanceof JComponent) ? (JComponent) focusOwner : null;
+    }
+
+    /**
+     * Checks if the component is eligible for a cut operation.
+     *
+     * @param component the component to check
+     * @return true if component is not null and is enabled
+     */
+    private boolean isComponentEligibleForCut(JComponent component) {
+        return component != null && component.isEnabled();
+    }
+
+    /**
+     * Cuts the contents of the component to the system clipboard.
+     *
+     * @param component the component whose contents are to be cut
+     */
+    private void performCutToClipboard(JComponent component) {
+        component.getTransferHandler().exportToClipboard(
+                component,
+                ClipboardUtil.getClipboard(),
+                TransferHandler.MOVE
+        );
     }
 }
