@@ -55,14 +55,13 @@ public class PasteAction extends AbstractSelectionAction {
         labels.configureAction(this, ID);
     }
 
-
-
     @Override
     protected void updateEnabled() {
         if (target != null) {
             setEnabled(target.isEnabled());
         }
-    }@Override
+    }
+    @Override
     public void actionPerformed(ActionEvent evt) {
         JComponent focusedComponent = getTargetComponent();
 
@@ -73,7 +72,6 @@ public class PasteAction extends AbstractSelectionAction {
             }
         }
     }
-
     private JComponent getTargetComponent() {
         if (target != null) {
             return target;
@@ -83,12 +81,11 @@ public class PasteAction extends AbstractSelectionAction {
             return (JComponent) focusManager.getPermanentFocusOwner();
         }
 
-        return null;
+       return null;
     }
     private boolean isComponentEligibleForTransfer(JComponent component) {
         return component != null && component.isEnabled() && component.getTransferHandler() != null;
     }
-
     private void importDataToComponent(JComponent component, Transferable transferable) {
         component.getTransferHandler().importData(component, transferable);
     }
