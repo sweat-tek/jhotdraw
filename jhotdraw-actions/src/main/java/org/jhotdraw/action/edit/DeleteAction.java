@@ -77,7 +77,7 @@ public class DeleteAction extends TextAction {
      * Creates a new instance which acts on the specified component.
      *
      * @param target The target of the action. Specify null for the currently
-     * focused component.
+     *               focused component.
      */
     public DeleteAction(JComponent target) {
         this(target, ID);
@@ -87,7 +87,7 @@ public class DeleteAction extends TextAction {
      * Creates a new instance which acts on the specified component.
      *
      * @param target The target of the action. Specify null for the currently
-     * focused component.
+     *               focused component.
      */
     protected DeleteAction(JComponent target, String id) {
         super(id);
@@ -110,15 +110,15 @@ public class DeleteAction extends TextAction {
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        JComponent c = target;
-        if (c == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
+        JComponent component = target;
+        if (component == null && (KeyboardFocusManager.getCurrentKeyboardFocusManager().
                 getPermanentFocusOwner() instanceof JComponent)) {
-            c = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
+            component = (JComponent) KeyboardFocusManager.getCurrentKeyboardFocusManager().
                     getPermanentFocusOwner();
         }
-        if (c != null && c.isEnabled()) {
-            if (c instanceof EditableComponent) {
-                ((EditableComponent) c).delete();
+        if (component != null && component.isEnabled()) {
+            if (component instanceof EditableComponent) {
+                ((EditableComponent) component).delete();
             } else {
                 deleteNextChar(evt);
             }
@@ -130,27 +130,51 @@ public class DeleteAction extends TextAction {
      * DefaultEditorKit.DeleteNextCharAction.actionPerformed(ActionEvent).
      */
     public void deleteNextChar(ActionEvent e) {
-        JTextComponent c = getTextComponent(e);
-        boolean beep = true;
-        if ((c != null) && (c.isEditable())) {
-            try {
-                javax.swing.text.Document doc = c.getDocument();
-                Caret caret = c.getCaret();
-                int dot = caret.getDot();
-                int mark = caret.getMark();
-                if (dot != mark) {
-                    doc.remove(Math.min(dot, mark), Math.abs(dot - mark));
-                    beep = false;
-                } else if (dot < doc.getLength()) {
-                    doc.remove(dot, 1);
-                    beep = false;
-                }
-            } catch (BadLocationException bl) {
-                // allowed empty
-            }
+        JTextComponent textComponent = getTextComponent(e);
+
+        if (shouldBeepInsteadOfDelete(textComponent)) {
+            Toolkit.getDefaultToolkit().beep();
+            return;
         }
-        if (beep) {
+
+        try {
+            deleteTextOrNextCharacter(textComponent);
+        } catch (BadLocationException ignored) {
+            // Exception ignored as it's unlikely to occur in practice
+        }
+    }
+// Refactored helper methods
+    private boolean shouldBeepInsteadOfDelete(JTextComponent textComponent) {
+        return textComponent == null || !textComponent.isEditable();
+    }
+
+    private void deleteTextOrNextCharacter(JTextComponent textComponent) throws BadLocationException {
+        Document doc = textComponent.getDocument();
+        Caret caret = textComponent.getCaret();
+
+        if (hasSelection(caret)) {
+            deleteSelectedText(doc, caret);
+        } else if (canDeleteNextCharacter(caret, doc)) {
+            deleteNextCharacter(doc, caret.getDot());
+        } else {
             Toolkit.getDefaultToolkit().beep();
         }
     }
-}
+
+    private boolean hasSelection(Caret caret) {
+        return caret.getDot() != caret.getMark();
+    }
+
+    private void deleteSelectedText(Document doc, Caret caret) throws BadLocationException {
+        int dot = caret.getDot();
+        int mark = caret.getMark();
+        doc.remove(Math.min(dot, mark), Math.abs(dot - mark));
+    }
+
+    private boolean canDeleteNextCharacter(Caret caret, Document doc) {
+        return caret.getDot() < doc.getLength();
+    }
+
+    private void deleteNextCharacter(Document doc, int dot) throws BadLocationException {
+        doc.remove(dot, 1);
+    }}

@@ -24,7 +24,6 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * @version $Id$
  */
 public abstract class AlignAction extends AbstractSelectedAction {
-
     private static final long serialVersionUID = 1L;
     protected ResourceBundleUtil labels
             = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
