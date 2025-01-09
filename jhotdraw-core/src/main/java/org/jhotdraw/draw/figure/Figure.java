@@ -23,7 +23,10 @@ import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.draw.tool.Tool;
 import org.jhotdraw.geom.Dimension2DDouble;
 
-/**
+/**public interface Figure {
+ void draw(Graphics2D g);    // Hvordan figuren tegnes
+ boolean contains(Point2D p); // Er et punkt inde i figuren?
+ }
  * A <em>figure</em> is a graphical element of a {@link Drawing}. A figure
  * can be only in one drawing at a time.
  * <p>
@@ -601,3 +604,4 @@ public interface Figure extends Cloneable, Serializable {
      */
     public void removePropertyChangeListener(PropertyChangeListener listener);
 }
+
