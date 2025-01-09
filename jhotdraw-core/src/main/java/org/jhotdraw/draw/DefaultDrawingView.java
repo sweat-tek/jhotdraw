@@ -55,7 +55,7 @@ public class DefaultDrawingView
      * used to select the figures.
      */
     private Set<Figure> selectedFigures = new LinkedHashSet<>();
-    private LinkedList<Handle> selectionHandles = new LinkedList<>();
+    LinkedList<Handle> selectionHandles = new LinkedList<>();
     private boolean isConstrainerVisible = false;
     private Constrainer visibleConstrainer = new GridConstrainer(8, 8);
     private Constrainer invisibleConstrainer = new GridConstrainer();
@@ -182,7 +182,33 @@ public class DefaultDrawingView
         return selectedFigures.isEmpty();
     }
 
+    public void setSecondaryHandleOwner(Handle handle) {
+        this.secondaryHandleOwner = handle;
+    }
+
+    public void handleSecondaryHandlesRequest(HandleEvent e) {
+        secondaryHandleOwner = e.getHandle();
+        secondaryHandles.clear();
+        secondaryHandles.addAll(secondaryHandleOwner.createSecondaryHandles());
+        for (Handle h : secondaryHandles) {
+            h.setView(DefaultDrawingView.this);
+            h.addHandleListener(eventHandler);
+        }
+        repaint();
+    }
+    protected void setFocusGained() {
+        if (editor != null) {
+            editor.setActiveView(DefaultDrawingView.this);
+        }
+    }
+
     private class EventHandler implements FigureListener, CompositeFigureListener, HandleListener, FocusListener {
+
+        private Drawing drawing;
+
+        protected EventHandler(Drawing drawing1) {
+            this.drawing = drawing1;
+        }
 
         @Override
         public void figureAdded(CompositeFigureEvent evt) {
@@ -291,7 +317,7 @@ public class DefaultDrawingView
         public void figureRequestRemove(FigureEvent e) {
         }
     }
-    private EventHandler eventHandler;
+    private IDrawingViewEventHandler eventHandler;
 
     /**
      * Creates new instance.
@@ -307,8 +333,8 @@ public class DefaultDrawingView
         setOpaque(true);
     }
 
-    protected EventHandler createEventHandler() {
-        return new EventHandler();
+    protected IDrawingViewEventHandler createEventHandler() {
+        return new DefaultDrawingViewEventHandler(this);
     }
 
     /**
@@ -913,7 +939,7 @@ public class DefaultDrawingView
     /**
      * Invalidates the handles.
      */
-    private void invalidateHandles() {
+    void invalidateHandles() {
         if (handlesAreValid) {
             handlesAreValid = false;
             Rectangle invalidatedArea = null;
@@ -1138,7 +1164,7 @@ public class DefaultDrawingView
      * Updates the view translation taking into account the current dimension of the view
      * JComponent, the size of the drawing, and the scale factor.
      */
-    private void validateViewTranslation() {
+    void validateViewTranslation() {
         if (getDrawing() == null) {
             translation.x = translation.y = 0;
             return;
