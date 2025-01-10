@@ -3,7 +3,7 @@ package org.jhotdraw.action.edit;
 import com.tngtech.jgiven.junit.ScenarioTest;
 import org.junit.Test;
 
-public class AbstractUndoRedoActionBDDTest extends ScenarioTest<GivenInitialState, WhenUndoRedoActionIsPerformed, ThenVerifyOutcome> {
+public class AbstractUndoRedoActionBDDTest extends ScenarioTest<GivenInitialState, WhenUndoRedoActionIsPerformed, ThenUndoActionIsPerformed> {
 
     @Test
     public void undo_action_should_delegate_to_real_action() {
