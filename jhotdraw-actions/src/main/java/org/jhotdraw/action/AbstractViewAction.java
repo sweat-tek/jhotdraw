@@ -8,6 +8,7 @@
 package org.jhotdraw.action;
 
 import java.beans.*;
+import java.util.Objects;
 import javax.swing.*;
 import org.jhotdraw.api.app.Application;
 import org.jhotdraw.api.app.View;
@@ -44,24 +45,18 @@ public abstract class AbstractViewAction extends AbstractAction {
      * the enabled state of the view and the application.
      */
     private boolean combinedEnabled = true;
-    private PropertyChangeListener applicationListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if ((evt.getPropertyName() == null && Application.ACTIVE_VIEW_PROPERTY == null) || (evt.getPropertyName() != null && evt.getPropertyName().equals(Application.ACTIVE_VIEW_PROPERTY))) { // Strings get interned
-                updateView((View) evt.getOldValue(), (View) evt.getNewValue());
-            }
+    private final PropertyChangeListener applicationListener = evt -> {
+        if (Objects.equals(evt.getPropertyName(), Application.ACTIVE_VIEW_PROPERTY)) {
+            updateView((View) evt.getOldValue(), (View) evt.getNewValue());
         }
     };
-    private PropertyChangeListener viewListener = new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
+    private final PropertyChangeListener viewListener = evt -> {
             String name = evt.getPropertyName();
-            if ("enabled".equals(name)) {
+            if (Objects.equals(name, "enabled")) {
                 updateEnabled();
-            } else if ((name == null && propertyName == null) || (name != null && name.equals(propertyName))) {
+            } else if (Objects.equals(name, propertyName)) {
                 updateView();
             }
-        }
     };
 
     /**

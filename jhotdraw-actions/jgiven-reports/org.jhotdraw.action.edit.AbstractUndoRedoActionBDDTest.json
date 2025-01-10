@@ -1,0 +1,161 @@
+{
+  "className": "org.jhotdraw.action.edit.AbstractUndoRedoActionBDDTest",
+  "name": "Abstract Undo Redo Action BDD",
+  "scenarios": [
+    {
+      "className": "org.jhotdraw.action.edit.AbstractUndoRedoActionBDDTest",
+      "testMethodName": "undo_action_should_delegate_to_real_action",
+      "description": "undo action should delegate to real action",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an application is running",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an application is running"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 914291900,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a real action is set",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a real action is set"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4300600,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the undo action is performed",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the undo action is performed"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 323900,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the real action should be invoked",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the real action should be invoked"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9822700,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 952868100
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 952868100
+    },
+    {
+      "className": "org.jhotdraw.action.edit.AbstractUndoRedoActionBDDTest",
+      "testMethodName": "undo_action_should_do_nothing_if_no_real_action",
+      "description": "undo action should do nothing if no real action",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an application is running",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an application is running"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1127300,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the undo action is performed",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the undo action is performed"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 391000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the real action should not be invoked",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the real action should not be invoked"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 197300,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 2158700
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 2158700
+    }
+  ],
+  "tagMap": {}
+}
